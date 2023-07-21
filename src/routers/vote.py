@@ -4,8 +4,8 @@ from .. import models, schemas, database, oauth2
 
 
 router = APIRouter(
-    preix="/vote", 
-    tages=['Vote']
+    prefix="/vote", 
+    tags=['Vote']
 )
 
 @router.post("/", status_code=status.HTTP_201_CREATED)

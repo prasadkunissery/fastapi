@@ -15,7 +15,7 @@ router = APIRouter(
 
 def get_posts(db: Session = Depends(get_db), limit: int = 2, skip: int = 0, search: Optional[str] =""):
 
-      #, current_user: int = Depends(oauth2.get_current_user)  - NOT WORKING
+    #, current_user: int = Depends(oauth2.get_current_user)  - NOT WORKING
     # cursor.execute("""SELECT * FROM post """)
     # posts = cursor.fetchall()
     print(limit)
@@ -27,9 +27,10 @@ def get_posts(db: Session = Depends(get_db), limit: int = 2, skip: int = 0, sear
     #posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
 
 
-    posts = db.query(models.Post,func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).
-            filter(models.Post.Title.contains.(search)).limit(limit).offset(skip).all()
-    
+    #posts = db.query(models.Post,func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.Title.contains.(search)).limit(limit).offset(skip).all()
+
+    posts = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(
+            models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
 
     return posts
 
@@ -48,8 +49,8 @@ def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
 
 @router.get("/{id}",response_model=schemas.PostOut)
 def get_post(id: int, db: Session = Depends(get_db)):
-    #    cursor.execute(""" SELECT * from post where id = %s """, (str(id),))       
-    #    post = cursor.fetchone()
+    #cursor.execute(""" SELECT * from post where id = %s """, (str(id),))       
+    #post = cursor.fetchone()
     #post = db.query(models.Post).filter(models.Post.id == id).first()
     
     post = db.query(models.Post,func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.id == id).first()
